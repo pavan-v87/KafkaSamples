@@ -45,7 +45,7 @@ public class FileStreamSourceTask extends SourceTask {
     private char[] buffer = new char[1024];
     private int offset = 0;
     private String topic = null;
-    //private int batchSize = FileSourceConnector.DEFAULT_TASK_BATCH_SIZE;
+    private int batchSize = FileSourceConnector.DEFAULT_TASK_BATCH_SIZE;
 
     private Long streamOffset;
 
@@ -67,13 +67,13 @@ public class FileStreamSourceTask extends SourceTask {
         if (topic == null)
             throw new ConnectException("FileStreamSourceTask config missing topic setting");
 
-        /*if (props.containsKey(FileSourceConnector.TASK_BATCH_SIZE_CONFIG)) {
+        if (props.containsKey(FileSourceConnector.TASK_BATCH_SIZE_CONFIG)) {
             try {
                 batchSize = Integer.parseInt(props.get(FileSourceConnector.TASK_BATCH_SIZE_CONFIG));
             } catch (NumberFormatException e) {
                 throw new ConnectException("Invalid FileStreamSourceTask configuration", e);
             }
-        }*/
+        }
     }
 
     @Override
@@ -151,9 +151,9 @@ public class FileStreamSourceTask extends SourceTask {
                             records.add(new SourceRecord(offsetKey(filename), offsetValue(streamOffset), topic, null,
                                     null, null, VALUE_SCHEMA, line, System.currentTimeMillis()));
 
-                            /*if (records.size() >= batchSize) {
+                            if (records.size() >= batchSize) {
                                 return records;
-                            }*/
+                            }
                         }
                     } while (line != null);
                 }
