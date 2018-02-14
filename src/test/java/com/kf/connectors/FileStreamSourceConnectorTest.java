@@ -36,19 +36,19 @@ public class FileStreamSourceConnectorTest extends EasyMockSupport {
     private static final String MULTIPLE_TOPICS = "test1,test2";
     private static final String FILENAME = "/somefilename";
 
-    private FileStreamSourceConnector connector;
+    private FileSourceConnector connector;
     private ConnectorContext ctx;
     private Map<String, String> sourceProperties;
 
     @Before
     public void setup() {
-        connector = new FileStreamSourceConnector();
+        connector = new FileSourceConnector();
         ctx = createMock(ConnectorContext.class);
         connector.initialize(ctx);
 
         sourceProperties = new HashMap<>();
-        sourceProperties.put(FileStreamSourceConnector.TOPIC_CONFIG, SINGLE_TOPIC);
-        sourceProperties.put(FileStreamSourceConnector.FILE_CONFIG, FILENAME);
+        sourceProperties.put(FileSourceConnector.TOPIC_CONFIG, SINGLE_TOPIC);
+        sourceProperties.put(FileSourceConnector.FILE_CONFIG, FILENAME);
     }
 
     @Test
@@ -59,17 +59,17 @@ public class FileStreamSourceConnectorTest extends EasyMockSupport {
         List<Map<String, String>> taskConfigs = connector.taskConfigs(1);
         assertEquals(1, taskConfigs.size());
         assertEquals(FILENAME,
-                taskConfigs.get(0).get(FileStreamSourceConnector.FILE_CONFIG));
+                taskConfigs.get(0).get(FileSourceConnector.FILE_CONFIG));
         assertEquals(SINGLE_TOPIC,
-                taskConfigs.get(0).get(FileStreamSourceConnector.TOPIC_CONFIG));
+                taskConfigs.get(0).get(FileSourceConnector.TOPIC_CONFIG));
 
         // Should be able to return fewer than requested #
         taskConfigs = connector.taskConfigs(2);
         assertEquals(1, taskConfigs.size());
         assertEquals(FILENAME,
-                taskConfigs.get(0).get(FileStreamSourceConnector.FILE_CONFIG));
+                taskConfigs.get(0).get(FileSourceConnector.FILE_CONFIG));
         assertEquals(SINGLE_TOPIC,
-                taskConfigs.get(0).get(FileStreamSourceConnector.TOPIC_CONFIG));
+                taskConfigs.get(0).get(FileSourceConnector.TOPIC_CONFIG));
 
         verifyAll();
     }
@@ -78,18 +78,18 @@ public class FileStreamSourceConnectorTest extends EasyMockSupport {
     public void testSourceTasksStdin() {
         EasyMock.replay(ctx);
 
-        sourceProperties.remove(FileStreamSourceConnector.FILE_CONFIG);
+        sourceProperties.remove(FileSourceConnector.FILE_CONFIG);
         connector.start(sourceProperties);
         List<Map<String, String>> taskConfigs = connector.taskConfigs(1);
         assertEquals(1, taskConfigs.size());
-        assertNull(taskConfigs.get(0).get(FileStreamSourceConnector.FILE_CONFIG));
+        assertNull(taskConfigs.get(0).get(FileSourceConnector.FILE_CONFIG));
 
         EasyMock.verify(ctx);
     }
 
     @Test(expected = ConnectException.class)
     public void testMultipleSourcesInvalid() {
-        sourceProperties.put(FileStreamSourceConnector.TOPIC_CONFIG, MULTIPLE_TOPICS);
+        sourceProperties.put(FileSourceConnector.TOPIC_CONFIG, MULTIPLE_TOPICS);
         connector.start(sourceProperties);
     }
 

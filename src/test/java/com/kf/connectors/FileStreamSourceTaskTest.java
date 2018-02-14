@@ -53,8 +53,8 @@ public class FileStreamSourceTaskTest extends EasyMockSupport {
     public void setup() throws IOException {
         tempFile = File.createTempFile("file-stream-source-task-test", null);
         config = new HashMap<>();
-        config.put(FileStreamSourceConnector.FILE_CONFIG, tempFile.getAbsolutePath());
-        config.put(FileStreamSourceConnector.TOPIC_CONFIG, TOPIC);
+        config.put(FileSourceConnector.FILE_CONFIG, tempFile.getAbsolutePath());
+        config.put(FileSourceConnector.TOPIC_CONFIG, TOPIC);
         task = new FileStreamSourceTask();
         offsetStorageReader = createMock(OffsetStorageReader.class);
         context = createMock(SourceTaskContext.class);
@@ -132,7 +132,7 @@ public class FileStreamSourceTaskTest extends EasyMockSupport {
         expectOffsetLookupReturnNone();
         replay();
 
-        config.put(FileStreamSourceConnector.TASK_BATCH_SIZE_CONFIG, "5000");
+        config.put(FileSourceConnector.TASK_BATCH_SIZE_CONFIG, "5000");
         task.start(config);
 
         FileOutputStream os = new FileOutputStream(tempFile);
@@ -155,7 +155,7 @@ public class FileStreamSourceTaskTest extends EasyMockSupport {
     public void testMissingTopic() throws InterruptedException {
         replay();
 
-        config.remove(FileStreamSourceConnector.TOPIC_CONFIG);
+        config.remove(FileSourceConnector.TOPIC_CONFIG);
         task.start(config);
     }
 
@@ -166,7 +166,7 @@ public class FileStreamSourceTaskTest extends EasyMockSupport {
         String data = "line\n";
         System.setIn(new ByteArrayInputStream(data.getBytes()));
 
-        config.remove(FileStreamSourceConnector.FILE_CONFIG);
+        config.remove(FileSourceConnector.FILE_CONFIG);
         task.start(config);
 
         List<SourceRecord> records = task.poll();
@@ -178,7 +178,7 @@ public class FileStreamSourceTaskTest extends EasyMockSupport {
     }
 
     public void testInvalidFile() throws InterruptedException {
-        config.put(FileStreamSourceConnector.FILE_CONFIG, "bogusfilename");
+        config.put(FileSourceConnector.FILE_CONFIG, "bogusfilename");
         task.start(config);
         // Currently the task retries indefinitely if the file isn't found, but shouldn't return any data.
         for (int i = 0; i < 100; i++)
